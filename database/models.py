@@ -1,6 +1,6 @@
 from sqlalchemy.sql import func
 from sqlalchemy import (
-	Column, Integer, String, Boolean, Datetime, ForeignKey, List
+	Column, Integer, String, Boolean, Datetime, ForeignKey, List, Float
 )
 from database import Base
 
@@ -22,3 +22,11 @@ class UserGroups(Base):
 
     id = Column(Integer, primary_key=True)
     group_name = Column(String, unique=True)
+
+
+class PlayingWithNeon(Base):
+    __tablename__ = 'playing_with_neon'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    value = Column(Float)
