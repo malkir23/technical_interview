@@ -1,7 +1,7 @@
 from database import create_tables, get_db
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends
-from sqlachemy
+from database.models import PlayingWithNeon
 
 app = FastAPI()
 
@@ -11,8 +11,8 @@ def read_root():
 
 @app.get("/tests")
 def read_tests(db: Session = Depends(get_db)):
-
-    playing_with_neon =
+    tests = db.query(PlayingWithNeon).all()
+    return tests
 
 @app.on_event("startup")
 def startup_event():
