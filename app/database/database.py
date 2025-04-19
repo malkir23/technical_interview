@@ -1,17 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from core.config import settings
+from app.core.config import settings
 
 
-engine = create_engine(settings.database_url)
+engine = create_engine(settings.PG_DB_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
 def create_tables():
-    """Create all tables in the database."""
     Base.metadata.create_all(bind=engine)
 
 def get_db():
