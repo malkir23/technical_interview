@@ -8,7 +8,7 @@ app = FastAPI()
 def read_root():
     return {"Hello": "World"}
 
-app.include_router(users.route, tags=["Users"])
+app.include_router(users.router, tags=["Users"])
 
 @app.on_event("startup")
 def startup_event():

@@ -1,5 +1,4 @@
-from wsgiref.validate import validator
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
 from typing import Optional
 
@@ -12,9 +11,10 @@ class UserSchema(BaseModel):
     updated_at: Optional[datetime] = None
 
     @validator('email')
-    def validate_email(self, value):
+    def validate_email(cls, value):
         if not value.endswith('.com'):
-            raise ValueError
+            raise ValueError("Email must end with '.com'")
+        return value
 
 
     class Config:
