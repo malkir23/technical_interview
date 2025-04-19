@@ -1,4 +1,6 @@
+from fastapi import FastAPI
 from app.database.database import create_tables
+from app.api.endpoints import users
 
 app = FastAPI()
 
@@ -6,7 +8,7 @@ app = FastAPI()
 def read_root():
     return {"Hello": "World"}
 
-app.include_router(site.route, tags=["Site"])
+app.include_router(users.route, tags=["Users"])
 
 @app.on_event("startup")
 def startup_event():
