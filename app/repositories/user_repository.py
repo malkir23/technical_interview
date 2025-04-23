@@ -4,8 +4,6 @@ from app.models.users import UserSchema
 
 
 class UserRepository(CRUDBase):
-    def __init__(self, session):
-        super().__init__(session)
 
     def create_user(self, **kwargs) -> UserSchema:
         user = self.create(Users, **kwargs)
@@ -14,6 +12,10 @@ class UserRepository(CRUDBase):
     def get_user(self, user_id: int) -> UserSchema:
         user = self.read(Users, id=user_id)
         return UserSchema.from_orm(user)
+
+    def get_all_users(self) -> list[UserSchema]:
+        users = self.get_all(Users)
+        return [UserSchema.from_orm(user) for user in users]
 
     def update_user(self, user_id: int, **kwargs) -> UserSchema:
         user = self.read(Users, id=user_id)
