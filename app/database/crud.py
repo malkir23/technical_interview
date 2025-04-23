@@ -1,8 +1,10 @@
 from app.database.database import get_session
-from fastapi import Depends
 class CRUDBase:
-    def __init__(self, session: Depends(get_session)):
-        self.session = session
+    def __init__(self, session = None):
+        if session is None:
+            self.session = next(get_session())
+        else:
+            self.session = session
 
     def create(self, model, **kwargs):
         instance = model(**kwargs)
