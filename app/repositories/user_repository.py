@@ -4,6 +4,8 @@ from app.models.users import UserSchema
 
 
 class UserRepository(CRUDBase):
+    def __init__(self, session):
+        super().__init__(session)
 
     def create_user(self, **kwargs) -> UserSchema:
         user = self.create(Users, **kwargs)
