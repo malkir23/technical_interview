@@ -19,3 +19,10 @@ def create_user(
 ) -> UserCreate:
     user = UserRepository(session).create_user(**user.dict())
     return user
+
+@router.patch("/users", response_model=UserUpdate)
+def update_user(
+    user: UserUpdate, session: Session = Depends(get_session)
+) -> UserUpdate:
+    user = UserRepository(session).update_user(**user.dict())
+    return user
