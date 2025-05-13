@@ -5,25 +5,25 @@ from app.models.users import UserSchema
 
 class UserRepository(CRUDBase):
     def __init__(self, session):
-        super().__init__(session)
+        super().__init__(session=session, model=Users)
 
-    def create_user(self, **kwargs) -> UserSchema:
-        user = self.create(Users, **kwargs)
-        return UserSchema.from_orm(user)
+    def create_user(self, user_data) -> UserSchema:
+        user = self.create(user_data.dict())
+        return UserSchema.model_validate(user)
 
-    def get_user(self, user_id: int) -> UserSchema:
-        user = self.read(Users, id=user_id)
-        return UserSchema.from_orm(user)
+    def get_user(self, **kwargs) -> UserSchema:
+        user = self.get(**kwargs)
+        return UserSchema.model_validate(user)
 
     def get_all_users(self) -> list[UserSchema]:
-        users = self.get_all(Users)
-        return [UserSchema.from_orm(user) for user in users]
+        users = self.get_all()
+        return [UserSchema.model_validate(user) for user in users]
 
     def update_user(self, user_id: int, **kwargs) -> UserSchema:
-        user = self.read(Users, id=user_id)
+        user = self.get(id=user_id)
         updated_user = self.update(user, **kwargs)
-        return UserSchema.from_orm(updated_user)
+        return UserSchema.model_validate(updated_user)
 
     def delete_user(self, user_id: int) -> None:
-        user = self.read(Users, id=user_id)
+        user = self.get(id=user_id)
         self.delete(user)

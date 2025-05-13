@@ -2,27 +2,51 @@ from fastapi import APIRouter
 from app.repositories.user_repository import UserRepository
 from app.models.users import UserSchema, UserCreate, UserUpdate
 from fastapi import Depends
-from app.database.database import get_session
-from sqlalchemy.orm import Session
+from app.core.services.users import get_user_repository, check_existing_user
+from fastapi import HTTPException, status
 
 
 router = APIRouter()
 
-@router.get("/users", response_model=list[UserSchema])
-def list_users(session: Session = Depends(get_session)) -> list[UserSchema]:
-    users = UserRepository(session).get_all_users() or []
+
+@router.get("/", response_model=list[UserSchema])
+def list_users(
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> list[UserSchema]:
+    users = user_repo.get_all_users()
     return users
 
-@router.post("/users", response_model=UserCreate)
+
+@router.post("/", response_model=UserCreate, status_code=status.HTTP_201_CREATED)
 def create_user(
-    user: UserCreate, session: Session = Depends(get_session)
+    user_data: UserCreate,
+    user_repo: UserRepository = Depends(get_user_repository),
 ) -> UserCreate:
-    user = UserRepository(session).create_user(**user.dict())
+    try:
+        user = user_repo.create_user(user_data)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e) from e
     return user
 
-@router.patch("/users", response_model=UserUpdate)
+
+@router.patch("/{user_id}", response_model=UserUpdate)
 def update_user(
-    user: UserUpdate, session: Session = Depends(get_session)
+    user_id: int,
+    user: UserUpdate,
+    user_repo: UserRepository = Depends(get_user_repository)
 ) -> UserUpdate:
-    user = UserRepository(session).update_user(**user.dict())
+    try:
+        user = user_repo.update_user(user)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e) from e
     return user
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(
+    user_id: int,
+    user_repo: UserRepository = Depends(get_user_repository)
+) -> None:
+    try:
+        user_repo.delete_user(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e) from e
