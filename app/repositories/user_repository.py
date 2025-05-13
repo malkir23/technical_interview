@@ -1,6 +1,6 @@
 from app.database.crud import CRUDBase
 from app.database.models import Users
-from app.models.users import UserSchema
+from app.models.users import UserSchema, UserUpdate
 
 
 class UserRepository(CRUDBase):
@@ -19,11 +19,11 @@ class UserRepository(CRUDBase):
         users = self.get_all()
         return [UserSchema.model_validate(user) for user in users]
 
-    def update_user(self, user_id: int, **kwargs) -> UserSchema:
-        user = self.get(id=user_id)
-        updated_user = self.update(user, **kwargs)
-        return UserSchema.model_validate(updated_user)
+    def update_user(self, get_filter: dict, user_update_data: UserUpdate) -> UserUpdate:
+        updated_user = self.update(
+            get_filter, user_update_data.model_dump(exclude_unset=True)
+        )
+        return UserUpdate.model_validate(updated_user)
 
     def delete_user(self, user_id: int) -> None:
-        user = self.get(id=user_id)
-        self.delete(user)
+        self.delete(user_id)

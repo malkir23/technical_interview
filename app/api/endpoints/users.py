@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[UserSchema])
-def list_users(
+async def list_users(
     user_repo: UserRepository = Depends(get_user_repository),
 ) -> list[UserSchema]:
     users = user_repo.get_all_users()
@@ -18,9 +18,9 @@ def list_users(
 
 
 @router.post("/", response_model=UserCreate, status_code=status.HTTP_201_CREATED)
-def create_user(
+async def create_user(
     user_data: UserCreate,
-    user_repo: UserRepository = Depends(get_user_repository),
+    user_repo: UserRepository = Depends(check_existing_user),
 ) -> UserCreate:
     try:
         user = user_repo.create_user(user_data)
@@ -30,23 +30,25 @@ def create_user(
 
 
 @router.patch("/{user_id}", response_model=UserUpdate)
-def update_user(
+async def update_user(
     user_id: int,
-    user: UserUpdate,
-    user_repo: UserRepository = Depends(get_user_repository)
+    user_update_data: UserUpdate,
+    user_repo: UserRepository = Depends(get_user_repository),
 ) -> UserUpdate:
     try:
-        user = user_repo.update_user(user)
+        user = user_repo.update_user({"id": user_id}, user_update_data)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e) from e
     return user
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(
-    user_id: int,
-    user_repo: UserRepository = Depends(get_user_repository)
+
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
+async def delete_user(
+    user_id: int, user_repo: UserRepository = Depends(get_user_repository)
 ) -> None:
     try:
         user_repo.delete_user(user_id)
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e) from e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Can`t delete user"
+        ) from e

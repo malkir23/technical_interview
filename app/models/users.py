@@ -2,7 +2,7 @@ from pydantic import BaseModel, ValidationInfo, field_validator, Field
 from typing import Optional
 
 class EmailBase(BaseModel):
-    email: Optional[str] = Field(min_length=5, max_length=50)
+    email: str = Field(min_length=5, max_length=50)
     @field_validator('email')
     def validate_email(cls, value: str, info: ValidationInfo) -> str:
         if not value.endswith('.com'):
@@ -15,9 +15,13 @@ class UserCreate(EmailBase):
     group_id: Optional[int] = None
 
 class UserUpdate(EmailBase):
-    name: Optional[str] = Field(min_length=3, max_length=50)
-    password: Optional[str] = Field(min_length=8, max_length=40)
+    name: Optional[str] = Field(None, min_length=3, max_length=50)
+    password: Optional[str] = Field(None, min_length=8, max_length=40)
+    email: Optional[str] = Field(None, min_length=5, max_length=50)
     group_id: Optional[int] = None
+    is_active: Optional[bool] = None
+    class Config:
+        from_attributes = True
 
 
 class UserSchema(EmailBase):
