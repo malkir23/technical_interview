@@ -1,7 +1,7 @@
 from sys import prefix
 from fastapi import FastAPI
 from app.database.database import create_tables
-from app.api.endpoints import users
+from app.api.endpoints import users, user_group
 from contextlib import asynccontextmanager
 
 
@@ -20,3 +20,6 @@ def read_root():
 
 
 app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(
+    user_group.router, prefix="/user_group", tags=["User Ggroup"]
+)
