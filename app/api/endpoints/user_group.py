@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.repositories.user_repository import UserRepository
+from app.repositories.users_groups_repository import UserGroupRepository
 from app.models.users_groups import UserGroupSchema
 from fastapi import Depends
 from app.core.services.users_groups import get_users_groups_repository
@@ -11,20 +11,25 @@ router = APIRouter()
 
 @router.get("/", response_model=list[UserGroupSchema])
 async def list_users_groups(
-    users_groups_repo: UserRepository = Depends(get_users_groups_repository),
+    users_groups_repo: UserGroupRepository = Depends(get_users_groups_repository),
 ) -> list[UserGroupSchema]:
-    users_groups = users_groups_repo.get_all_users()
+    users_groups = users_groups_repo.get_all_groups()
     return users_groups
+
 
 @router.get("/{group_id}", response_model=UserGroupSchema)
 async def get_user_group(
     group_id: int,
-    users_groups_repo: UserRepository = Depends(get_users_groups_repository),
+    users_groups_repo: UserGroupRepository = Depends(get_users_groups_repository),
 ) -> UserGroupSchema:
     user_group = users_groups_repo.get_user_group(id=group_id)
     if not user_group:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User group not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User group not found"
+        )
     return user_group
+
+
 
 
 # @router.post("/", response_model=UserCreate, status_code=status.HTTP_201_CREATED)
@@ -45,7 +50,6 @@ async def get_user_group(
 # ) -> UserSchema:
 #     users = user_repo.get_user(id=user_id)
 #     return users
-
 
 
 # @router.patch("/{user_id}", response_model=UserUpdate)
