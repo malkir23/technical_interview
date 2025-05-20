@@ -1,6 +1,6 @@
 from app.database.crud import CRUDBase
 from app.database.models import UserGroups
-from app.models.users_groups import UserGroupSchema
+from app.models.users_groups import UserGroupGetSchema, UserGroupSchema
 
 
 class UserGroupRepository(CRUDBase):
@@ -11,13 +11,13 @@ class UserGroupRepository(CRUDBase):
         group = self.create(user_data.dict())
         return UserGroupSchema.model_validate(group)
 
-    def get_group(self, **kwargs) -> UserGroupSchema:
+    def get_group(self, **kwargs) -> UserGroupGetSchema:
         group = self.get(**kwargs)
-        return UserGroupSchema.model_validate(group)
+        return UserGroupGetSchema.model_validate(group)
 
-    def get_all_groups(self) -> list[UserGroupSchema]:
+    def get_all_groups(self) -> list[UserGroupGetSchema]:
         groups = self.get_all()
-        return [UserGroupSchema.model_validate(group) for group in groups]
+        return [UserGroupGetSchema.model_validate(group) for group in groups]
 
     def update_group(self, get_filter: dict, group_update_data: UserGroupSchema) -> UserGroupSchema:
         updated_group = self.update(
